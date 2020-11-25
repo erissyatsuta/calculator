@@ -130,7 +130,7 @@
             })
 
             equalButton.addEventListener("click", () => {
-                if (state === OUTPUT) return;
+                if (state !== SECOND_OPERAND_INPUT) return;
                 state = OUTPUT;
                 equalize();
                 updateInputField();
