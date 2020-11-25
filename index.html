@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <main>
+            <div id="input-field">0</div>
+            <div class=".row">
+                <button class="number-button">1</button>
+                <button class="number-button">2</button>
+                <button class="number-button">3</button>
+                <button class="number-button">4</button>
+                <button class="operator-button">+</button>
+                <button id="equal-button">=</button>
+            </div>
+            <div class=".row">
+                <button class="number-button">5</button>
+                <button class="number-button">6</button>
+                <button class="number-button">7</button>
+                <button class="number-button">8</button>
+                <button class="operator-button">-</button>
+            </div>
+            <div class=".row">
+                <button class="number-button">9</button>
+                <button class="number-button">0</button>
+                <button class="operator-button">/</button>
+                <button class="operator-button">*</button>
+                <button id="clear-button">C</button>
+            </div>
+        </main>
+
+        <script> 
+            const FIRST_OPERAND_INPUT = 0;      // state codes
+            const OPERATOR_INPUT = 1;
+            const SECOND_OPERAND_INPUT = 2;
+            const OUTPUT = 3;
+
+            const inputField = document.querySelector("#input-field");
+
+            const numberButtons = document.querySelectorAll(".number-button");
+            const operatorButtons = document.querySelectorAll(".operator-button");
+            const equalButton = document.querySelector("#equal-button");
+            const clearButton = document.querySelector("#clear-button");
+
+            let a = 0, b = 0;
+            let operator;
+            let state = FIRST_OPERAND_INPUT;
+
+            function add(a, b) { return a + b; }
+            function subtract(a, b) { return a - b; }
+            function multiply(a, b) { return a * b; }
+            function divide(a, b) { return a / b; }
+
+            function operate(operator, a, b) { return operator(a, b); }
+
+            function updateInputField() {       // update info, displayed to user
+                switch (state) {
+                    case OUTPUT:
+                    case OPERATOR_INPUT:
+                    case FIRST_OPERAND_INPUT:
+                        inputField.textContent = a;
+                        break;
+                    case SECOND_OPERAND_INPUT:
+                        inputField.textContent = b;
+                        break;
+                }
+            }
+
+            function equalize() {       // make calculation and prepare for further input
+                switch (operator) {
+                    case '+':
+                        action = add;
+                        break;
+                    case '-':
+                        action = subtract;
+                        break;
+                    case '*':
+                        action = multiply;
+                        break;
+                    case '/':
+                        action = divide;
+                        break;
+                }
+                a = operate(action, a, b);
+                b = 0;
+            }
+
+            numberButtons.forEach((numberButton) => {
+                numberButton.addEventListener("click", function(e) {
+                    switch (state) {
+                        case OUTPUT:
+                            a = b = 0;
+                            state = FIRST_OPERAND_INPUT;
+                        case FIRST_OPERAND_INPUT:
+                            a *= 10;
+                            a += Number(e.target.textContent);
+                            break;
+                        case OPERATOR_INPUT:
+                            state = SECOND_OPERAND_INPUT;
+                        case SECOND_OPERAND_INPUT:
+                            b *= 10;
+                            b += Number(e.target.textContent);
+                            break;
+                    }
+
+                    updateInputField();
+                });
+            })
+
+            operatorButtons.forEach((operatorButton) => {
+                operatorButton.addEventListener("click", function(e) {
+                    switch(state) {
+                        case FIRST_OPERAND_INPUT:
+                            state = OPERATOR_INPUT;
+                        case OPERATOR_INPUT:
+                            updateInputField();
+                            break;
+                        case SECOND_OPERAND_INPUT:
+                            state = OUTPUT;
+                        case OUTPUT:
+                            equalize();
+                            updateInputField();
+                            state = SECOND_OPERAND_INPUT;
+                            break;
+                    }
+
+                    operator = e.target.textContent;
+                });
+            })
+
+            equalButton.addEventListener("click", () => {
+                state = OUTPUT;
+                equalize();
+                updateInputField();
+            });
+
+            clearButton.addEventListener("click", () => {
+                state = FIRST_OPERAND_INPUT;
+                a = b = 0;
+                updateInputField();
+            })
+        </script>
+    </body>
+</html>
