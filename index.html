@@ -9,22 +9,22 @@
         <main>
             <div id="input-field">0</div>
             <div id="buttons">
-                    <button class="number-button">1</button>
-                    <button class="number-button">2</button>
-                    <button class="number-button">3</button>
-                    <button class="number-button">4</button>
-                    <button class="operator-button">+</button>
-                    <button id="equal-button">=</button>
-                    <button class="number-button">5</button>
-                    <button class="number-button">6</button>
-                    <button class="number-button">7</button>
-                    <button class="number-button">8</button>
-                    <button class="operator-button">-</button>
-                    <button class="number-button">9</button>
-                    <button class="number-button">0</button>
-                    <button class="operator-button">/</button>
-                    <button class="operator-button">*</button>
-                    <button id="clear-button">C</button>
+                    <div class="number-button">1</div>
+                    <div class="number-button">2</div>
+                    <div class="number-button">3</div>
+                    <div class="number-button">4</div>
+                    <div class="number-button">5</div>
+                    <div class="number-button">6</div>
+                    <div class="number-button">7</div>
+                    <div class="number-button">8</div>
+                    <div class="number-button">9</div>
+                    <div class="number-button">0</div>
+                    <div class="operator-button">+</div>
+                    <div class="operator-button">-</div>
+                    <div class="operator-button">/</div>
+                    <div class="operator-button">*</div>
+                    <div class="utility-button" id="clear-button">C</div>
+                    <div class="utility-button" id="equal-button">=</div>
             </div>
         </main>
 
@@ -41,6 +41,9 @@
             const OPERATOR_INPUT = 1;
             const SECOND_OPERAND_INPUT = 2;
             const OUTPUT = 3;
+            const ERROR = 4;
+
+            const DIGITS_AFTER_COMMA = 3;
 
             const inputField = document.querySelector("#input-field");
 
@@ -58,10 +61,32 @@
             function multiply(a, b) { return a * b; }
             function divide(a, b) { return a / b; }
 
-            function operate(operator, a, b) { return operator(a, b); }
+            /*
+                Apply chosen operation for entered operands.
+                Also rounds the result and checks division by zero.
+            */
+            function operate(operator, a, b) {
+                if (operator === divide && b === 0) {
+                    state = ERROR;
+                    return;
+                }
+                res = operator(a, b);
+                res = +res.toFixed(DIGITS_AFTER_COMMA);
+                return res;
+            }
 
-            function updateInputField() {       // update info, displayed to user
+            /*
+                Update information, displayed to user.
+                In case of viewing output or entering operator or first operand the first operand should be displayed.
+                In case of entering second operand the second operand should be displayed.
+
+                Also styleChosenOperatorButton is called, which updates style of chosen operator button (see below).
+            */
+            function updateInputField() {
                 switch (state) {
+                    case ERROR:
+                        inputField.textContent = "Error!";
+                        break;
                     case OUTPUT:
                     case OPERATOR_INPUT:
                     case FIRST_OPERAND_INPUT:
@@ -71,9 +96,33 @@
                         inputField.textContent = b;
                         break;
                 }
+
+                styleChosenOperatorButton();
             }
 
-            function equalize() {       // make calculation and prepare for further input
+            /*
+                Update style of chosen operator button.
+                Every operator button is cycled through. If operator button, which matches current operator, is found,
+                then it is styled to give user the visual response that this operator is chosen.
+            */
+            function styleChosenOperatorButton() {
+                let chosenOperatorButton;
+
+                operatorButtons.forEach((operatorButton) => {
+                    operatorButton.classList.remove("chosen-operator-button");
+                    if (operatorButton.textContent === operator) 
+                        chosenOperatorButton = operatorButton;
+                });
+
+                if (chosenOperatorButton)
+                    chosenOperatorButton.classList.add("chosen-operator-button");
+
+            }
+
+            /*
+                Makes calculation and prepares code for further input.
+            */
+            function equalize() {
                 switch (operator) {
                     case '+':
                         action = add;
@@ -90,12 +139,20 @@
                 }
                 a = operate(action, a, b);
                 b = 0;
+                operator = undefined;
             }
 
+            /*
+                This code handles input from number buttons.
+                If a number button was pressed when entering first or second operand, the appopriate operand's value is changed
+                If it was pressed on error or output screen - values of operands nullify and entering first operand phase starts
+                If it was pressed when entering operator - entering second operand phase starts
+            */
             numberButtons.forEach((numberButton) => {
                 numberButton.style.gridArea = numberNames[numberButton.textContent];
                 numberButton.addEventListener("click", function(e) {
                     switch (state) {
+                        case ERROR:
                         case OUTPUT:
                             a = b = 0;
                             state = FIRST_OPERAND_INPUT;
@@ -115,27 +172,37 @@
                 });
             })
 
+            /*
+                This code handles input from operator buttons.
+                Every time operator button is pressed operator value changes to the operator of pressed button.
+                The only exception is on error screen - in this case operator is reset no matter user's input.
+
+                If operator button was pressed when entering first operand or on output screen, entering operand phase starts.
+                If it was pressed when entering second operand - output screen is shown to the user and then entring operand phase starts.
+            */
             operatorButtons.forEach((operatorButton) => {
                 operatorButton.style.gridArea = operatorNames[operatorButton.textContent];
                 operatorButton.addEventListener("click", function(e) {
-                    if (operator === undefined)
+                    if (!operator)
                         operator = e.target.textContent;
 
                     switch(state) {
-                        case FIRST_OPERAND_INPUT:
-                            state = OPERATOR_INPUT;
-                            break;
                         case SECOND_OPERAND_INPUT:
                             state = OUTPUT;
                             equalize();
                             updateInputField();
+                        case FIRST_OPERAND_INPUT:
                         case OUTPUT:
                             state = OPERATOR_INPUT;
                             break;
-                        case OUTPUT:
                     }
 
                     operator = e.target.textContent;
+
+                    if (state === ERROR)
+                        operator = undefined;
+
+                    styleChosenOperatorButton();
                 });
             })
 
@@ -150,6 +217,7 @@
                 state = FIRST_OPERAND_INPUT;
                 a = b = 0;
                 operator = undefined;
+                
                 updateInputField();
             });
         </script>

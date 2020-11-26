@@ -1,9 +1,10 @@
 main {
     height: 400px;
-    width: 400px;
+    width: 200px;
     margin: 20px;
     display: flex;
     flex-direction: column;
+    align-items: center;
 
 }
 
@@ -22,13 +23,46 @@ main {
 }
 
 #buttons {
+    width: 80%;
     display: grid;
+    border-collapse:collapse;
     grid-template-areas: 
         "clear divide multiply subtract"
         "seven eight nine add"
         "four five six add"
         "one two three equal"
         "zero zero zero equal";
+}
+
+#buttons div {
+    border-color: rgb(0, 0, 0);
+    border-width: 1px;
+    border-style: solid;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+}
+
+#buttons div:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 8px rgb(255, 255, 255);
+}
+
+#buttons div:active {
+    background-color: slategray;
+}
+
+.number-button {
+    background-color: white;
+}
+
+.operator-button, .utility-button {
+    background-color: lightgrey;
+}
+
+.chosen-operator-button {
+    background-color: rgb(117, 117, 117);
 }
 
 #clear-button {
