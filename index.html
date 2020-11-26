@@ -1,36 +1,42 @@
 <!DOCTYPE html>
 <html>
+    <link href="styles/main.css" rel="stylesheet">
+
     <head>
         <meta charset="utf-8">
     </head>
     <body>
         <main>
             <div id="input-field">0</div>
-            <div class=".row">
-                <button class="number-button">1</button>
-                <button class="number-button">2</button>
-                <button class="number-button">3</button>
-                <button class="number-button">4</button>
-                <button class="operator-button">+</button>
-                <button id="equal-button">=</button>
-            </div>
-            <div class=".row">
-                <button class="number-button">5</button>
-                <button class="number-button">6</button>
-                <button class="number-button">7</button>
-                <button class="number-button">8</button>
-                <button class="operator-button">-</button>
-            </div>
-            <div class=".row">
-                <button class="number-button">9</button>
-                <button class="number-button">0</button>
-                <button class="operator-button">/</button>
-                <button class="operator-button">*</button>
-                <button id="clear-button">C</button>
+            <div id="buttons">
+                    <button class="number-button">1</button>
+                    <button class="number-button">2</button>
+                    <button class="number-button">3</button>
+                    <button class="number-button">4</button>
+                    <button class="operator-button">+</button>
+                    <button id="equal-button">=</button>
+                    <button class="number-button">5</button>
+                    <button class="number-button">6</button>
+                    <button class="number-button">7</button>
+                    <button class="number-button">8</button>
+                    <button class="operator-button">-</button>
+                    <button class="number-button">9</button>
+                    <button class="number-button">0</button>
+                    <button class="operator-button">/</button>
+                    <button class="operator-button">*</button>
+                    <button id="clear-button">C</button>
             </div>
         </main>
 
-        <script> 
+        <script>
+            const numberNames = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+            const operatorNames = {
+                '+': "add",
+                '-': "subtract",
+                '*': "multiply",
+                '/': "divide",
+            }
+
             const FIRST_OPERAND_INPUT = 0;      // state codes
             const OPERATOR_INPUT = 1;
             const SECOND_OPERAND_INPUT = 2;
@@ -87,6 +93,7 @@
             }
 
             numberButtons.forEach((numberButton) => {
+                numberButton.style.gridArea = numberNames[numberButton.textContent];
                 numberButton.addEventListener("click", function(e) {
                     switch (state) {
                         case OUTPUT:
@@ -109,6 +116,7 @@
             })
 
             operatorButtons.forEach((operatorButton) => {
+                operatorButton.style.gridArea = operatorNames[operatorButton.textContent];
                 operatorButton.addEventListener("click", function(e) {
                     if (operator === undefined)
                         operator = e.target.textContent;
