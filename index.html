@@ -110,18 +110,21 @@
 
             operatorButtons.forEach((operatorButton) => {
                 operatorButton.addEventListener("click", function(e) {
+                    if (operator === undefined)
+                        operator = e.target.textContent;
+
                     switch(state) {
                         case FIRST_OPERAND_INPUT:
                             state = OPERATOR_INPUT;
-                        case OPERATOR_INPUT:
-                            updateInputField();
                             break;
                         case SECOND_OPERAND_INPUT:
                             state = OUTPUT;
-                        case OUTPUT:
                             equalize();
                             updateInputField();
-                            state = SECOND_OPERAND_INPUT;
+                            state = OPERATOR_INPUT;
+                            break;
+                        case OUTPUT:
+                            state = OPERATOR_INPUT;
                             break;
                     }
 
@@ -139,8 +142,9 @@
             clearButton.addEventListener("click", () => {
                 state = FIRST_OPERAND_INPUT;
                 a = b = 0;
+                operator = undefined;
                 updateInputField();
-            })
+            });
         </script>
     </body>
 </html>
