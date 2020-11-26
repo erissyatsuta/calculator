@@ -121,11 +121,10 @@
                             state = OUTPUT;
                             equalize();
                             updateInputField();
-                            state = OPERATOR_INPUT;
-                            break;
                         case OUTPUT:
                             state = OPERATOR_INPUT;
                             break;
+                        case OUTPUT:
                     }
 
                     operator = e.target.textContent;
